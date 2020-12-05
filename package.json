@@ -3,7 +3,7 @@
   "version": "10.2.2",
   "private": true,
   "engines": {
-    "node": ">= 10.12.0 < 11 || >= 12.00"
+    "node": ">= 10.12.0 < 11 || >= 12.x"
   },
   "scripts": {
     "watch": "lerna run watch --parallel",
