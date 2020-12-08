@@ -21,6 +21,7 @@
     "test": "lerna run test --stream --no-bail",
     "e2e": "lerna run e2e --stream --no-bail",
     "build": "lerna run build",
+    "deploy": "yarn; yarn bootstrap; yarn build",
     "check-imports": "ts-node scripts/check-imports.ts",
     "generate-changelog": "ts-node scripts/changelogs/generate-changelog.ts",
     "publish-release": "lerna publish -m \"chore: Publish %s\" --no-push",

@@ -89,17 +89,19 @@ export const devConfig: VendureConfig = {
 
 function getDbConfig(): ConnectionOptions {
     const dbType = process.env.DB || 'mysql';
+    const { DB_NAME, DB_PASSWORD, DB_HOST, DB_USER } = process.env;
+
     switch (dbType) {
         case 'postgres':
             console.log('Using postgres connection');
             return {
                 synchronize: true,
                 type: 'postgres',
-                host: '127.0.0.1',
+                host: DB_HOST,
                 port: 5432,
-                username: 'admin',
-                password: 'secret',
-                database: 'vendure-dev',
+                username: DB_USER,
+                password: DB_PASSWORD,
+                database: DB_NAME,
             };
         case 'sqlite':
             console.log('Using sqlite connection');
