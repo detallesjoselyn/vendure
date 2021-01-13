@@ -1,0 +1,35 @@
+{
+  "name": "detalles-jocelyn-ecommerce",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "run:server": "ts-node ./src/index.ts",
+    "run:worker": "ts-node ./src/index-worker.ts",
+    "start-dev": "concurrently yarn:run:*",
+    "start": "node dist/index-worker.js & node dist/index.js",
+    "start-worker": "node dist/index-worker.js",
+    "build": "tsc",
+    "migration:generate": "ts-node migration generate",
+    "migration:run": "ts-node migration run",
+    "migration:revert": "ts-node migration revert"
+  },
+  "resolutions": {
+    "tslib": "1.11.2"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^5.7.2",
+    "@types/tmp": "^0.2.0",
+    "@vendure/admin-ui-plugin": "0.18.1",
+    "@vendure/asset-server-plugin": "0.18.1",
+    "@vendure/core": "0.18.1",
+    "@vendure/email-plugin": "0.18.1",
+    "dotenv": "^8.2.0",
+    "pg": "8.5.1",
+    "tmp": "^0.2.1",
+    "typescript": "4.0.3"
+  },
+  "devDependencies": {
+    "concurrently": "5.3.0",
+    "ts-node": "9.1.1"
+  }
+}
