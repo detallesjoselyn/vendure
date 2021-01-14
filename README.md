@@ -10,9 +10,9 @@ This project was generated with [`@vendure/create`](https://github.com/vendure-e
 ## Development
 
 ```
-yarn start
+yarn start-dev
 # or
-npm run start
+npm run start-dev
 ```
 
 will start the Vendure server and [worker](https://www.vendure.io/docs/developer-guide/vendure-worker/) processes from
@@ -28,6 +28,7 @@ npm run build
 
 will compile the TypeScript sources into the `/dist` directory.
 
+## Deploy to prod
 ## Migrations
 
 [Migrations](https://www.vendure.io/docs/developer-guide/migrations/) allow safe updates to the database schema.
