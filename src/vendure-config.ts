@@ -10,10 +10,11 @@ import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import path from 'path';
 import { GoogleStorageStrategy } from './plugins/google-storage-assets/google-storage-strategy';
+import { PublicStockPlugin } from './plugins/use-sku/use-sku.plugin';
+
 
 // Set up env file
 dotenv.config()
-
 export const config: VendureConfig = {
     apiOptions: {
         port: <number | undefined>process.env.PORT || 3000,
@@ -37,6 +38,7 @@ export const config: VendureConfig = {
             identifier: 'detalles',
             password: 'jocelyn',
         },
+        requireVerification: false,
     },
     dbConnectionOptions: {
         type: 'postgres',
@@ -62,6 +64,7 @@ export const config: VendureConfig = {
         }),
         DefaultJobQueuePlugin,
         DefaultSearchPlugin,
+        PublicStockPlugin,
         EmailPlugin.init({
             devMode: true,
             outputPath: path.join(__dirname, '../static/email/test-emails'),
