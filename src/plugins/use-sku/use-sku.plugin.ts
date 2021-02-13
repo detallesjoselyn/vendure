@@ -8,11 +8,13 @@ import {TopSellersService} from './use-sku.service'
     providers: [TopSellersService],
     shopApiExtensions: {
         schema: gql`
-            extend type Query {
-                customGetProduct(idProductVariant: ID): [ProductVariant!]!
+            extend type Mutation {
+                addItemsToOrder(products: []): UpdateOrderItemsResult!
             }
         `,
         resolvers: [PublicStockResolvers]
     }
 })
 export class PublicStockPlugin {}
+
+// addItemsToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!

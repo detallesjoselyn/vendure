@@ -6,5 +6,5 @@ gcloud run deploy ecommerce-detalles \
      --image "eu.gcr.io/detallesjoselyn/ecommerce-detalles" \
      --region "us-central1" \
      --allow-unauthenticated \
-     --memory=1G --add-cloudsql-instances detallesjoselyn:us-central1:detallesjocelynstorage \
+     --add-cloudsql-instances detallesjoselyn:us-central1:detallesjocelynstorage \
   --update-env-vars INSTANCE_CONNECTION_NAME="detallesjoselyn:us-central1:detallesjocelynstorage" --platform managed
