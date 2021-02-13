@@ -9,9 +9,12 @@ import {TopSellersService} from './use-sku.service'
     shopApiExtensions: {
         schema: gql`
             extend type Mutation {
-                addItemsToOrder(products: []): UpdateOrderItemsResult!
+                addItemsToOrder(idProductVariant: ID): [ProductVariant!]!
             }
         `,
+
+        // addItemsToOrder(products: []): UpdateOrderItemsResult!
+
         resolvers: [PublicStockResolvers]
     }
 })
