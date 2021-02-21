@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 import {
     examplePaymentHandler,
     DefaultJobQueuePlugin,
-    DefaultSearchPlugin,
     VendureConfig,
 } from '@vendure/core'; 
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
@@ -11,6 +10,7 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import path from 'path';
 import { GoogleStorageStrategy } from './plugins/google-storage-assets/google-storage-strategy';
 import { PublicStockPlugin } from './plugins/use-sku/use-sku.plugin';
+import { DJ_PLUGINS } from './plugins';
 
 
 // Set up env file
@@ -39,6 +39,7 @@ export const config: VendureConfig = {
             password: 'jocelyn',
         },
         requireVerification: false,
+        // tokenMethod: 'bearer'
     },
     dbConnectionOptions: {
         type: 'postgres',
@@ -60,15 +61,14 @@ export const config: VendureConfig = {
             storageStrategyFactory: () => new GoogleStorageStrategy('detalles-jocelyn-storage'),
             route: 'assets',
             assetUploadDir: '/tmp/vendure/assets',
-            port: 3001,
+            port: <number | undefined>process.env.ASSETS_PORT || 3001,
         }),
         DefaultJobQueuePlugin,
-        DefaultSearchPlugin,
-        PublicStockPlugin,
+        ...DJ_PLUGINS,
         EmailPlugin.init({
             devMode: true,
             outputPath: path.join(__dirname, '../static/email/test-emails'),
-            mailboxPort: 3003,
+            mailboxPort: <number | undefined>process.env.MAIL_PORT  || 3003,
             handlers: defaultEmailHandlers,
             templatePath: path.join(__dirname, '../static/email/templates'),
             globalTemplateVars: {
@@ -79,6 +79,6 @@ export const config: VendureConfig = {
                 changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
             },
         }),
-        AdminUiPlugin.init({ port: 3002 }),
+        AdminUiPlugin.init({ port: <number | undefined>process.env.ADMIN_PORT || 3002 }),
     ],
 };
