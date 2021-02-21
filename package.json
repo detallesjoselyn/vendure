@@ -6,7 +6,7 @@
     "run:server": "ts-node ./src/index.ts",
     "run:worker": "ts-node ./src/index-worker.ts",
     "start-dev": "concurrently yarn:run:*",
-    "start": "node dist/index-worker.js & node dist/index.js",
+    "start": "node dist/src/index-worker.js & node dist/src/index.js",
     "start-worker": "node dist/index-worker.js",
     "build": "tsc",
     "migration:generate": "ts-node migration generate",
