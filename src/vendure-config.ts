@@ -3,6 +3,7 @@ import {
     examplePaymentHandler,
     DefaultJobQueuePlugin,
     VendureConfig,
+    DefaultSearchPlugin
 } from '@vendure/core'; 
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
@@ -64,6 +65,7 @@ export const config: VendureConfig = {
             port: <number | undefined>process.env.ASSETS_PORT || 3001,
         }),
         DefaultJobQueuePlugin,
+        DefaultSearchPlugin,
         ...DJ_PLUGINS,
         EmailPlugin.init({
             devMode: true,
