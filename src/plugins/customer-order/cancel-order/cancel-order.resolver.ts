@@ -37,7 +37,6 @@ export class CancelOrderResolver {
     }
 
     private async cancelOrder(ctx: RequestContext, args: any | CancelOrderInput){
-        console.log(args);
         if (!args.code && !args.orderId) {
             throw new UserInputError('Es necesario especificar el código o id del pedido!');
         }
@@ -46,6 +45,9 @@ export class CancelOrderResolver {
         if (!order) {
             throw new UserInputError('El pedido que intentas cancelar no existe!');
         }
+        if (order.customer?.user?.id != ctx.session?.user?.id) {
+            throw new UserInputError('No puedes cancelar este pedido debido a que no lo tienes asignado');
+        }
         if (order.state == 'Cancelled') {
             throw new UserInputError('El pedido ya se encuentra cancelado');
         }
@@ -53,9 +55,6 @@ export class CancelOrderResolver {
             throw new UserInputError(
                 "El pedido no se puede cancelar Estado: " + order.state
             );
-        }
-        if (order.customer?.user?.id != ctx.session?.user?.id) {
-            throw new UserInputError('No puedes cancelar este pedido debido a que no lo tienes asignado');
         }
 
         let orderCanceled = await this.orderService.cancelOrder(
