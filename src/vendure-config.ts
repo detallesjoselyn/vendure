@@ -10,7 +10,7 @@ import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import path from 'path';
 import { GoogleStorageStrategy } from './plugins/google-storage-assets/google-storage-strategy';
-import { PublicStockPlugin } from './plugins/use-sku/use-sku.plugin';
+// import { PublicStockPlugin } from './plugins/use-sku/use-sku.plugin';
 import { DJ_PLUGINS } from './plugins';
 
 
@@ -67,20 +67,20 @@ export const config: VendureConfig = {
         DefaultJobQueuePlugin,
         DefaultSearchPlugin,
         ...DJ_PLUGINS,
-        EmailPlugin.init({
-            devMode: true,
-            outputPath: path.join(__dirname, '../static/email/test-emails'),
-            mailboxPort: <number | undefined>process.env.MAIL_PORT  || 3003,
-            handlers: defaultEmailHandlers,
-            templatePath: path.join(__dirname, '../static/email/templates'),
-            globalTemplateVars: {
-                // The following variables will change depending on your storefront implementation
-                fromAddress: '"example" <noreply@example.com>',
-                verifyEmailAddressUrl: 'http://localhost:8080/verify',
-                passwordResetUrl: 'http://localhost:8080/password-reset',
-                changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
-            },
-        }),
+        // EmailPlugin.init({
+        //     devMode: true,
+        //     outputPath: path.join(__dirname, '../static/email/test-emails'),
+        //     mailboxPort: <number | undefined>process.env.MAIL_PORT  || 3003,
+        //     handlers: defaultEmailHandlers,
+        //     templatePath: path.join(__dirname, '../static/email/templates'),
+        //     globalTemplateVars: {
+        //         // The following variables will change depending on your storefront implementation
+        //         fromAddress: '"example" <noreply@example.com>',
+        //         verifyEmailAddressUrl: 'http://localhost:8080/verify',
+        //         passwordResetUrl: 'http://localhost:8080/password-reset',
+        //         changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
+        //     },
+        // }),
         AdminUiPlugin.init({ port: <number | undefined>process.env.ADMIN_PORT || 3002 }),
     ],
 };
