@@ -19,9 +19,9 @@
   "dependencies": {
     "@google-cloud/storage": "^5.7.2",
     "@types/tmp": "^0.2.0",
-    "@vendure/admin-ui-plugin": "0.18.1",
-    "@vendure/asset-server-plugin": "0.18.1",
-    "@vendure/core": "0.18.1",
+    "@vendure/admin-ui-plugin": "0.18.5",
+    "@vendure/asset-server-plugin": "0.18.5",
+    "@vendure/core": "0.18.5",
     "@vendure/email-plugin": "0.18.1",
     "dotenv": "^8.2.0",
     "pg": "8.5.1",
