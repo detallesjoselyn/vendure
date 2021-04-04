@@ -65,21 +65,21 @@ export const config: VendureConfig = {
         DefaultJobQueuePlugin,
         DefaultSearchPlugin,
         ...DJ_PLUGINS,
-        // EmailPlugin.init({
-        //     route: 'mailbox',
-        //     devMode: true,
-        //     outputPath: path.join(__dirname, '../static/email/test-emails'),
-        //     // mailboxPort: <number | undefined>process.env.MAIL_PORT  || 3003,
-        //     handlers: defaultEmailHandlers,
-        //     templatePath: path.join(__dirname, '../static/email/templates'),
-        //     globalTemplateVars: {
-        //         // The following variables will change depending on your storefront implementation
-        //         fromAddress: '"example" <noreply@example.com>',
-        //         verifyEmailAddressUrl: 'http://localhost:8080/verify',
-        //         passwordResetUrl: 'http://localhost:8080/password-reset',
-        //         changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
-        //     },
-        // }),
+        EmailPlugin.init({
+            route: 'mailbox',
+            devMode: true,
+            outputPath: path.join(__dirname, '../static/email/test-emails'),
+            // mailboxPort: <number | undefined>process.env.MAIL_PORT  || 3003,
+            handlers: defaultEmailHandlers,
+            templatePath: path.join(__dirname, '../static/email/templates'),
+            globalTemplateVars: {
+                // The following variables will change depending on your storefront implementation
+                fromAddress: '"example" <noreply@example.com>',
+                verifyEmailAddressUrl: 'http://localhost:8080/verify',
+                passwordResetUrl: 'http://localhost:8080/password-reset',
+                changeEmailAddressUrl: 'http://localhost:8080/verify-email-address-change'
+            },
+        }),
         AdminUiPlugin.init({  route: 'admin', port: <number | undefined>process.env.ADMIN_PORT || 3002 }),
     ],
 };
