@@ -6,4 +6,3 @@ DetallesJoselyn-fe94f8369d9e.json
 .env
 .vscode/
 deploy-prod.sh
-cloud-functions/env
