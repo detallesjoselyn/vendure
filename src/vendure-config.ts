@@ -12,7 +12,7 @@ import path from 'path';
 import { GoogleStorageStrategy } from './plugins/google-storage-assets/google-storage-strategy';
 import { DJ_PLUGINS } from './plugins';
 
-// Set up env file
+// Set up env vars file
 dotenv.config()
 export const config: VendureConfig = {
     apiOptions: {
@@ -23,6 +23,8 @@ export const config: VendureConfig = {
                 'request.credentials': 'include',
             } as any,
         },// turn this off for production
+
+        // ================= TODO: move to environment variable =================
         adminApiDebug: true, // turn this off for production
         shopApiPath: 'shop-api',
         shopApiPlayground: {
@@ -30,6 +32,8 @@ export const config: VendureConfig = {
                 'request.credentials': 'include',
             } as any,
         },// turn this off for production
+
+        // ================= TODO: move to environment variable =================
         shopApiDebug: true,// turn this off for production
     },
     authOptions: {
@@ -42,6 +46,8 @@ export const config: VendureConfig = {
     },
     dbConnectionOptions: {
         type: 'postgres',
+
+        // ================= TODO: move to environment variable =================
         synchronize: true, // turn this off for production
         logging: false,
         database: process.env.DATABASE_NAME,
@@ -57,14 +63,15 @@ export const config: VendureConfig = {
     customFields: {},
     plugins: [
         AssetServerPlugin.init({
+            // ================= TODO: move "detalles-jocelyn-storage" to environment variable =================
             storageStrategyFactory: () => new GoogleStorageStrategy('detalles-jocelyn-storage'),
             route: 'assets',
             assetUploadDir: '/tmp/vendure/assets',
-            // port: <number | undefined>process.env.ASSETS_PORT || 3001,
         }),
         DefaultJobQueuePlugin,
         DefaultSearchPlugin,
         ...DJ_PLUGINS,
+        // TODO FIX the email setup and add emails to the users
         // EmailPlugin.init({
         //     route: 'mailbox',
         //     devMode: true,
