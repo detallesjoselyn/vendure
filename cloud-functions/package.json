@@ -10,7 +10,9 @@
   },
   "scripts": {
     "start": "firebase serve --only functions:dialogflowFirebaseFulfillment",
-    "deploy": "firebase deploy --only functions:dialogflowFirebaseFulfillment"
+    "deploy": "firebase deploy --only functions:dialogflowFirebaseFulfillment",
+    "deploy-function:prod":"./deploy-prod.sh",
+    "deploy-function:dev":"./deploy-dev.sh"
   },
   "dependencies": {
     "actions-on-google": "^2.2.0",
