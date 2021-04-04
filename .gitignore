@@ -2,7 +2,8 @@ node_modules
 dist
 static/assets
 static/email/test-emails
-DetallesJoselyn-fe94f8369d9e.json
+DetallesJoselyn-*.json
 .env
 .vscode/
 deploy-prod.sh
+deploy-dev.sh
