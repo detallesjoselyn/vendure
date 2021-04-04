@@ -3,8 +3,7 @@ const axios = require('axios');
 const env = require('./env');
 const user_profile_facebook = require('./user-profile');
 
-
-const vendure_url = 'API_' + env.ENVIRONMENT in env ? env['API_' + env.ENVIRONMENT] : 'https://demo.vendure.io';
+const vendure_url = 'API_' + process.env.ENVIRONMENT in env ? env['API_' + process.env.ENVIRONMENT] : 'https://demo.vendure.io';
 
 /** VENDURE ADMIN-API CALLS */
 function createCustomer(psid, email, callback) {
@@ -84,10 +83,10 @@ function login(callback) {
 /** END VENDURE ADMIN-API CALLS */
 
 function getPass(psid) {
-    return new Buffer.from(`dj-${env.SECRET}-${psid}`).toString('base64').slice(3, 15);
+    return new Buffer.from(`dj-${process.env.SECRET}-${psid}`).toString('base64').slice(3, 15);
 }
 function getEmail(psid) {
-    return env.ENVIRONMENT == 'PROD' ? `${psid}@detalles.mx` : `${psid}@testing.mx`;
+    return process.env.ENVIRONMENT == 'PROD' ? `${psid}@detalles.mx` : `${psid}@testing.mx`;
 }
 
 /** VENDURE SHOP-API CALLS */

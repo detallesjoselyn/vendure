@@ -1,0 +1,7 @@
+module.exports = {
+  "TARGET_APP_ID": "263902037430900", // 263902037430900 its for the inbox page
+  "PAYMENT_METHODS_ATTACH_ID": "1178758669261114",
+
+  "API_DEV": "https://ecommerce-detalles-6rdirhirma-uc.a.run.app",
+  "API_PROD": "https://ecommerce-detalles-prod-6rdirhirma-uc.a.run.app",
+}
