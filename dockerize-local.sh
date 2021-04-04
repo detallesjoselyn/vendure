@@ -1,3 +1,5 @@
+#Script to DOCKERIZE locally before deploy to google RUN
+
 # Stops existing containers
 docker stop detallesDockerized
 # Removes existing containers

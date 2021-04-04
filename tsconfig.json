@@ -18,6 +18,7 @@
     "gulpfile.ts",
     "migrations/*.ts",
     "**/*.spec.ts",
-    "src/ui-extensions/*"
+    "src/ui-extensions/*",
+    "cloud-functions"
   ]
 }
