@@ -22,7 +22,6 @@ export class GenerateOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: any,
     ): Promise<ActiveOrderResult | any> {
-
         if (!ctx.session) {
             throw new UnauthorizedError();
         }
