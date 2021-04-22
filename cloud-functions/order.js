@@ -10,7 +10,11 @@ const message_api = require('./message-api');
 const vendure_api = require('./vendure-api');
 
 async function processOrderByText(agent, text, psid) {
-    agent.add('😉 Dame un momento para verificar tu orden 🛒')
+    try {
+        await message_api.sendMessage(psid,'😉 Dame un momento para verificar tu orden 🛒');
+    }catch(e){
+        agent.add('😉 Dame un momento para verificar tu orden 🛒');
+    }
     let validOrder = [];
     getListFromText(text).forEach(item => {
         let itemOrder = splitCodeAndQuantity(item);
@@ -18,7 +22,7 @@ async function processOrderByText(agent, text, psid) {
             let previuslyAdded = false;
             validOrder.forEach((order, index) => {
                 if (order.code.toUpperCase() == itemOrder.code.toUpperCase()) {
-                    validOrder[index].require += itemOrder.require;
+                    validOrder[index].quantity += itemOrder.quantity;
                     previuslyAdded = true;
                 }
             });
@@ -56,116 +60,39 @@ async function processOrderByText(agent, text, psid) {
         try {
             let loginResponse = await vendure_api.loginShopCustomer(psid);
             credentials = vendure_api.getCredentials(loginResponse);
-            // if ('set-cookie' in loginResponse.request.res.headers) {
-            //     loginResponse.request.res.headers['set-cookie'].map((cookie) => {
-            //         credentials += cookie.split(';')[0] + '; ';
-            //     });
-            // }
 
         } catch (e) {
-            console.log("ERROR IN LOGIN");
+            console.error("ERROR IN LOGIN");
             notifyOrderErrorToCustomer(psid,'¡Upss!, Servicio temporalmente fuera de servicio, intenta más tarde...','INVALID_CREDENTIALS',false);
             return;
         }
 
-        vendure_api.findProductsBySku(
-            validOrder,
-            credentials,
-            (resProducts) => {
-                if (resProducts.length == 0) {
-                    notifyOrderErrorToCustomer(psid,'¡Upss!, No encontramos algún producto para tu pedido, verifica el código del producto');
-                    return;
+
+        let order;
+        try {
+            order  = await vendure_api.generateCustomerOrderBySkus(credentials,validOrder);
+        } catch(e){
+            notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido');
+            return ;
+        }
+
+        if (order.data ) {
+            if (order.data.data) {
+                if (order.data.data.generateOrderBySkus.state == vendure_api.ORDER_STATES.authorized) {
+                    notifyOrderToCustomer(psid,order.data.data.generateOrderBySkus,user.first_name);
+                } else {
+                    notifyOrderErrorToCustomer(psid,'¡Oh oh!, Ocurrio un problema al procesar tu pedido');
                 }
-                console.log(resProducts);
-                vendure_api.addItemsToOrder(
-                    resProducts, credentials,
-                    async (itemsToOrderResponse) => {
-                        let activeOrder;
-                        try {
-                            activeOrder = await vendure_api.getActiveOrder(credentials);
-                        } catch(e){
-                            console.log("ERROR getActiveOrder");
-                            // console.log(e.data);
-                            notifyOrderErrorToCustomer(psid,'¡Upss!, algo salio mal al intentar generar tu pedido...','ORDER_NOT_GENERATED');
-                            return;
-                        }
-                        activeOrder = activeOrder.data.data.activeOrder
-
-                        if (activeOrder.lines.length == 0){
-                            // console.log("INSUFFICIENT_STOCK_ERROR");
-                            // cancel current order
-                            try {
-                                // TODO: VERIFICAR SI ES NECESARIO CANCELAR LA ORDEN O CAMBIAR CONFIG EN VENDURE PARA EVITAR GENERAR ORDER VACIA.
-                                await vendure_api.setOrderState(credentials,vendure_api.ORDER_STATES.canceled);
-                            }catch(e){
-                                console.log("ERROR TO CANCEL ORDER: " + activeOrder.id + " CODE: " + activeOrder.code);
-                            }
-                            let errorMessage = validOrder.length == 1 ? `😔Lo sentimos, el producto ${validOrder[0].code} está temporalmente fuera de stock`:
-                                `😔Lo sentimos, los productos que requieres están temporalmente fuera de stock`; 
-                            notifyOrderErrorToCustomer(psid,errorMessage,'INSUFFICIENT_STOCK_ERROR');
-                            return;
-                        }
-                        let nextState;
-                        try {
-                            nextState = await vendure_api.getNextOrderState(credentials);
-                            if (!nextState.data.data.nextOrderStates.find(state => state == vendure_api.ORDER_STATES.arrangingPayment)) {
-                                console.log("INVALID STATE TO CONTINUE");
-                                notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido','INVALID_ORDER_TRANSITION');
-                                return;
-                            }
-                            nextState = nextState.data.data.nextOrderStates[0];
-                        }catch(e){
-                            console.log("ERROR NEXT STATE ORDER, forcing to continue with default state");
-                            //notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido','INVALID_ORDER_TRANSITION');
-
-                            nextState = vendure_api.ORDER_STATES.arrangingPayment;
-                        }
-
-                        let transitionOrderStateResponse;
-                        try{
-                            transitionOrderStateResponse = await vendure_api.setOrderState(credentials,nextState);
-                        }catch(e){
-                            console.log("error when order transition state to: " + nextState);
-                            notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido','INVALID_ORDER_TRANSITION');
-                            return ;
-                        }
-                        
-                        if ('message' in transitionOrderStateResponse.data.data.transitionOrderToState){
-                            console.log(transitionOrderStateResponse.data.data.transitionOrderToState.message);
-                            notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido','INVALID_ORDER_TRANSITION');
-                            return;
-                        }
-                        let addPaymentMethodResponse;
-                        try{
-                            addPaymentMethodResponse = await vendure_api.setPaymentMethodOrder(credentials,vendure_api.PAYMENT_METHODS.default);
-                        } catch(e){
-                            console.log(e.data);
-                            notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido','INVALID_PAYMENT_METHOD');
-                            return;
-                        }
-                        notifyOrderToCustomer(psid,addPaymentMethodResponse.data.data.addPaymentToOrder,user.first_name);                        
-                    }
-                );
-
+            } else {
+                let message = '😔Lo sentimos, Ocurrio un problema al procesar tu pedido, ' + 
+                (0 in order.data.errors? order.data.errors[0].message : '');
+                notifyOrderErrorToCustomer(psid,message);
             }
-        );
+        } else {
+            notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido');
+        }
 
-        // else {
-        //     agent.add("😔Lo sentimos, no encontramos productos disponibles de tu lista: ");
-        //     agent.add(text);
-        //     let countRetry = agent.getContext('__system_counters__');
-        //     if (countRetry) {
-        //         if (countRetry.parameters['no-match'] > 3) {
-        //             notifyOrderErrorToCustomer(agent);
-        //         } else {
-        //             setMenuFallback(agent);
-        //         }
-        //     } else {
-        //         setMenuFallback(agent);
-        //     }
-        // }
     } else {
-        // setMenuFallback(agent);
         notifyOrderErrorToCustomer(psid,'😔Lo sentimos, no pudimos procesar tu pedido');
     }
 }
@@ -303,13 +230,41 @@ async function notifyOrderErrorToCustomer(psid,message,errorCode,otherOrder = tr
 }
 
 function getListFromText(text) {
-    return text.split(',');
+    try {
+        if (text.search("\n") && text.search(",")) {
+            let items = [];
+            text.split("\n").map((item) => {
+                if (item != null && item != "") {
+                    if ( item.search(",") >= 0 ) {
+                        item.split(",").map((subItem) => {
+                            if (subItem != "" && subItem != null) {
+                                items.push(subItem);
+                            }
+                        });
+                    } else {
+                        items.push(item)
+                    }
+                }
+            });
+            return items;
+        } else if ( text.search("\n") && !text.search(",") ) {
+            return text.split("\n");
+        } 
+        else if ( !text.search("\n") && text.search(",")) {
+            return text.split(',');
+        } else {
+            return [];
+        }
+
+    }catch(e){
+        return []
+    }
 }
 function splitCodeAndQuantity(itemOrder) {
     // let quantity = 0;
     // OBTENEMOS EL SKU
     itemOrder = itemOrder.match(/[A-Za-z0-9]{3,10}(\s*)/);
-    if (!(0 in itemOrder)) {
+    if ( !itemOrder || !(0 in itemOrder)) {
         return null;
     }
 
@@ -322,7 +277,7 @@ function splitCodeAndQuantity(itemOrder) {
         return null;
     }
 
-    return { code: itemOrder[0].trim().toUpperCase(), require: matchQuantity };
+    return { code: itemOrder[0].trim().toUpperCase(), quantity: matchQuantity };
 }
 
 let existencia = [
