@@ -3,7 +3,8 @@ const axios = require('axios');
 const env = require('./env');
 const user_profile_facebook = require('./user-profile');
 
-const vendure_url = 'API_' + process.env.ENVIRONMENT in env ? env['API_' + process.env.ENVIRONMENT] : 'https://demo.vendure.io';
+
+const vendure_url = 'API_' + env.ENVIRONMENT in env ? env['API_' + env.ENVIRONMENT] : 'https://demo.vendure.io';
 
 /** VENDURE ADMIN-API CALLS */
 function createCustomer(psid, email, callback) {
@@ -469,6 +470,46 @@ function cancelCustomerOrder(credentials, code) {
 }
 
 /** */
+function generateCustomerOrderBySkus(credentials,items) {
+    let textSkus = JSON.stringify(items);
+    textSkus = textSkus.replace(/\"/g,`\\"`);
+
+    let mutation = `mutation {
+        generateOrderBySkus(skus: "${textSkus}"){
+            ...on Order {
+                id
+                code
+                state
+                total
+                totalWithTax
+                lines{
+                    id
+                    quantity
+                    unitPriceWithTax
+                    productVariant {
+                        id
+                        sku
+                        priceWithTax
+                        price
+                    }
+                    unitPrice
+                }
+            }
+        }
+    }`;
+
+    let payload = {
+        query: mutation,
+        variables: {}
+    }
+    return api.postAsync(
+        vendure_url + '/shop-api',
+        payload,
+        { 'Cookie': credentials }
+    );
+}
+
+/** */
 function getCurrentCustomerLogged(credentials, callback) {
     let q = `query {
         activeCustomer {
@@ -539,6 +580,7 @@ module.exports = {
     getNextOrderState,
     setOrderState,
     setPaymentMethodOrder,
+    generateCustomerOrderBySkus,
     cancelCustomerOrder,
     ORDER_STATES,
     PAYMENT_METHODS
