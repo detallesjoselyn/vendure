@@ -50,8 +50,9 @@ async function processOrderByText(agent, text, psid) {
 
         try {
             let registerResponse = await vendure_api.registerShopCustomer(psid, user);
+            console.info("register.data",registerResponse.data);
         } catch (e) {
-            console.log("ERROR IN REGISTER CUSTOMER");
+            console.error("ERROR IN REGISTER CUSTOMER",e);
             notifyOrderErrorToCustomer(psid,'¡Upss!, Servicio temporalmente fuera de servicio, intenta más tarde...',null,false);
             return ;
         }
@@ -62,7 +63,7 @@ async function processOrderByText(agent, text, psid) {
             credentials = vendure_api.getCredentials(loginResponse);
 
         } catch (e) {
-            console.error("ERROR IN LOGIN");
+            console.error("ERROR IN LOGIN",e);
             notifyOrderErrorToCustomer(psid,'¡Upss!, Servicio temporalmente fuera de servicio, intenta más tarde...','INVALID_CREDENTIALS',false);
             return;
         }
@@ -72,27 +73,31 @@ async function processOrderByText(agent, text, psid) {
         try {
             order  = await vendure_api.generateCustomerOrderBySkus(credentials,validOrder);
         } catch(e){
+            console.error("error on async await",e);
             notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido');
             return ;
         }
-
         if (order.data ) {
             if (order.data.data) {
                 if (order.data.data.generateOrderBySkus.state == vendure_api.ORDER_STATES.authorized) {
                     notifyOrderToCustomer(psid,order.data.data.generateOrderBySkus,user.first_name);
                 } else {
+                    console.warn("Error: no generateOrderBySkus object",order.data.data);
                     notifyOrderErrorToCustomer(psid,'¡Oh oh!, Ocurrio un problema al procesar tu pedido');
                 }
             } else {
                 let message = '😔Lo sentimos, Ocurrio un problema al procesar tu pedido, ' + 
                 (0 in order.data.errors? order.data.errors[0].message : '');
+                console.warn("Error response vendure error object: ",order.data.errors);
                 notifyOrderErrorToCustomer(psid,message);
             }
         } else {
+            console.warn("eror in data.data", order.data);
             notifyOrderErrorToCustomer(psid,'¡Upps!, Ocurrio un problema al procesar tu pedido');
         }
 
     } else {
+        console.warn("order invalid", text);
         notifyOrderErrorToCustomer(psid,'😔Lo sentimos, no pudimos procesar tu pedido');
     }
 }
