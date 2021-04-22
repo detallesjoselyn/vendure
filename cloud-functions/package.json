@@ -1,7 +1,7 @@
 {
   "name": "dialogflowFirebaseFulfillment",
   "description": "This is the default fulfillment for a Dialogflow agents using Cloud Functions for Firebase",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "license": "Apache Version 2.0",
   "author": "Google Inc.",
@@ -15,13 +15,14 @@
     "deploy-function:dev": "./deploy-dev.sh"
   },
   "dependencies": {
-    "api": "^2.4.4",
-    "axios": "^0.21.1",
-    "firebase-admin": "^9.4.2",
-    "firebase-functions": "^3.11.0",
+    "actions-on-google": "^2.13.0",
+    "api": "2.4.4",
+    "axios": "0.21.1",
     "dialogflow": "1.2.0",
     "dialogflow-fulfillment": "git+https://github.com/naranjja/dialogflow-fulfillment-nodejs.git",
-    "request": "^2.80.0"
+    "firebase-admin": "9.4.2",
+    "firebase-functions": "3.11.0",
+    "request": "2.80.0"
   },
   "devDependencies": {}
 }
