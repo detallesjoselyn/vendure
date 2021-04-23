@@ -3,8 +3,7 @@ const axios = require('axios');
 const env = require('./env');
 const user_profile_facebook = require('./user-profile');
 
-
-const vendure_url = 'API_' + env.ENVIRONMENT in env ? env['API_' + env.ENVIRONMENT] : 'https://demo.vendure.io';
+const vendure_url = 'API_' + process.env.ENVIRONMENT in env ? env['API_' + process.env.ENVIRONMENT] : 'https://ecommerce-detalles-6rdirhirma-uc.a.run.app';
 
 /** VENDURE ADMIN-API CALLS */
 function createCustomer(psid, email, callback) {
