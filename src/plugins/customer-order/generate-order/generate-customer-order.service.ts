@@ -24,13 +24,15 @@ export class GenerateCustomerOrderService {
     async findProductVariantsBySKU(ctx: RequestContext, inCodes: Array<String>): Promise<Array<ProductVariant>> {
         const qb = this.connection.getRepository<ProductVariant>(ctx,ProductVariant)
         .createQueryBuilder('ProductVariant');
+        qb.leftJoin('ProductVariant.product','product')
         if (inCodes.length > 0) {
             qb.andWhere(`ProductVariant.sku IN ( :...skus )`,{skus: inCodes});
         } else {
             qb.andWhere("ProductVariant.sku IN ('-1')");
         }
-        qb.andWhere('ProductVariant.deletedAt IS NULL');
-        
+        qb.andWhere('ProductVariant.deletedAt IS NULL')
+        .andWhere('ProductVariant.enabled = true')
+        .andWhere('product.deletedAt IS NULL AND product.enabled = true');
         return qb.getMany();
     }
 
