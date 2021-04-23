@@ -11,6 +11,8 @@ import { ActiveOrderResult } from '@vendure/common/lib/generated-shop-types'
 @Resolver('GenerateOrder')
 export class GenerateOrderResolver {
 
+    private TAG = "GenerateOrderResolver";
+
     constructor(
         private orderService: OrderService,
         private generateCustomerOrderService: GenerateCustomerOrderService
@@ -32,12 +34,14 @@ export class GenerateOrderResolver {
             skus.push(sku.code);
         });
         if (skus.length == 0) {
+            console.warn(this.TAG + " no skus: ",skus);
             throw new UserInputError('Solicitud incorrecta!');
         }
         let search: Array<ProductVariant>;
         try {
             search = await this.generateCustomerOrderService.findProductVariantsBySKU(ctx, skus);
         } catch (e) {
+            console.warn(this.TAG+ ".generateCustomerOrderService()", e);
             search = [];
         }
 
@@ -49,8 +53,9 @@ export class GenerateOrderResolver {
                 if (!order) {
                     order = await this.orderService.create(ctx,ctx.session.user?.id as ID);
                 }
-            }catch(e){console.log("Error to get or create order");}
+            }catch(e){console.warn(this.TAG,"Error to get or create order");}
             if (!order) {
+                console.error(this.TAG,"Ocurrió un error al intentar genear el pedido");
                 throw new InternalServerError("Ocurrió un error al intentar genear el pedido");
             }
 
@@ -66,10 +71,12 @@ export class GenerateOrderResolver {
                             } else if(addItemResult.order){;
                                 order = addItemResult.order
                             }
-                        }catch(e){/** error to add products to order beacuse insuficient stock  */}
+                        }catch(e){
+                            console.warn(this.TAG + " Error on addItemToOrder",productVariant);
+                        }
                     }
                 };
-            }catch(e) {console.log(`ERROR ADDING ITEMS TO ORDER, detail: ${e}`);}
+            }catch(e) {console.warn(this.TAG,`ERROR ADDING ITEMS TO ORDER, detail: ${e}`);}
 
             if (order) {
                 if (order.lines.length > 0) {
@@ -79,6 +86,7 @@ export class GenerateOrderResolver {
                         try{
                             await this.orderService.cancelOrder(ctx,{orderId: order.id,reason: "ERROR on transi¡tion state to ArrangingPayment" });
                         } catch(e){}
+                        console.error(this.TAG + ".transitionToState() ",e)
                         throw new IllegalOperationError("Ocurrio un error al procesar el pedido");
                     }
 
@@ -92,7 +100,9 @@ export class GenerateOrderResolver {
                         } else {
                             order = await this.orderService.cancelOrder(ctx,{orderId: order.id,reason: "CANCEL ORDER, NO PAYMENT TYPE AVAILABLE"});
                         }
-                    } catch (e) {console.log("Error on transition order state or set paymentMethod");}
+                    } catch (e) {
+                        console.error( this.TAG + ".addPaymentToOrder()",e);
+                    }
                     if (order.state != 'PaymentAuthorized' || order.lines.length == 0) {
                         throw new IllegalOperationError("Ocurrio un error al autorizar el pedido");
                     }
@@ -101,8 +111,10 @@ export class GenerateOrderResolver {
 
         } else {
             if (search.length == 0){
+                console.warn(this.TAG,"No encontramos los productos solicitados")
                 throw new IllegalOperationError("No encontramos los productos solicitados");
             } else {
+                console.warn(this.TAG,"Stock insuficiente para generar pedido")
                 throw new IllegalOperationError("Stock insuficiente para generar pedido");
             }
         }
