@@ -15,7 +15,7 @@
     "deploy-function:dev": "./deploy-dev.sh"
   },
   "dependencies": {
-    "actions-on-google": "^2.13.0",
+    "actions-on-google": "2.13.0",
     "api": "2.4.4",
     "axios": "0.21.1",
     "dialogflow": "1.2.0",
