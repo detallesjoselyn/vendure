@@ -15,13 +15,14 @@
     "deploy-function:dev": "./deploy-dev.sh"
   },
   "dependencies": {
-    "api": "^2.4.4",
-    "axios": "^0.21.1",
-    "firebase-admin": "^9.4.2",
-    "firebase-functions": "^3.11.0",
+    "actions-on-google": "2.2.0",
+    "api": "2.4.4",
+    "axios": "0.21.1",
+    "firebase-admin": "9.4.2",
+    "firebase-functions": "3.11.0",
     "dialogflow": "1.2.0",
     "dialogflow-fulfillment": "git+https://github.com/naranjja/dialogflow-fulfillment-nodejs.git",
-    "request": "^2.80.0"
+    "request": "2.80.0"
   },
   "devDependencies": {}
 }
