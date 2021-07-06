@@ -8,3 +8,4 @@ DetallesJoselyn-*.json
 deploy-prod.sh
 deploy-dev.sh
 deploy-qa.sh
+deploy-testing.sh
