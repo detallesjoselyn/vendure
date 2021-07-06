@@ -2,6 +2,9 @@
   "name": "detalles-jocelyn-ecommerce",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "^12.20 || >= 14.13"
+  },
   "scripts": {
     "run:server": "ts-node ./src/index.ts",
     "run:worker": "ts-node ./src/index-worker.ts",
@@ -23,10 +26,10 @@
     "@google-cloud/storage": "^5.7.2",
     "@types/nodemailer": "^6.4.1",
     "@types/tmp": "^0.2.0",
-    "@vendure/admin-ui-plugin": "1.0.0-rc.0",
-    "@vendure/asset-server-plugin": "^1.0.0-rc.0",
-    "@vendure/core": "^1.0.0-rc.0",
-    "@vendure/email-plugin": "^1.0.0-rc.0",
+    "@vendure/admin-ui-plugin": "1.1.0",
+    "@vendure/asset-server-plugin": "1.1.0",
+    "@vendure/core": "1.1.0",
+    "@vendure/email-plugin": "1.1.0",
     "dotenv": "^8.2.0",
     "pg": "8.5.1",
     "tmp": "^0.2.1",

@@ -7,3 +7,4 @@ DetallesJoselyn-*.json
 .vscode/
 deploy-prod.sh
 deploy-dev.sh
+deploy-qa.sh
