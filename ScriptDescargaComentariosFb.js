@@ -121,43 +121,48 @@
   const procesarFoto = (onFinish) => {
     const descargarMensajes = (onFinish) => {
       // se obtiene codigo y precio del producto
-      let [codigo, , precio, venta, cantidadDisponible=0] = document
-        .querySelector(PHOTO_HEADER_SELECTOR)?.innerHTML.split("<br>") || [];
+      let [codigo, , precio, venta, cantidadDisponible] = document?.querySelector(PHOTO_HEADER_SELECTOR)?.innerHTML.split("<br>") || [];
 
+      if(cantidadDisponible.indexOf(prefijoCantidad)<0){
+        cantidadDisponible = `${prefijoCantidad}0`;
+      }
       // se obtienen comentarios del productos
       const commentWrappers = Array.from(
         document.querySelectorAll(COMMENT_WRAPPERS_SELECTOR)
       );
+      
 
       const dataToSave = Array.from(commentWrappers).map((element) => {
         const [titulo, comment] = Array.from(
           element.querySelectorAll(COMMENT_CONTENT_SELECTOR)
         );
 
-        const contentComment = comment.querySelector("div").innerHTML;
-        const { metodo, cantidad, comentarioValido } = procesarComment(
+        const contentComment = comment?.querySelector("div").innerHTML;
+        
+        const { metodo, cantidad, comentarioValido } = contentComment ? procesarComment(
           contentComment
-        );
+        ):{comentarioValido: false, metodo:'', cantidad: 0};
 
         comentario = !comentarioValido ? contentComment+', Ir:' + document.location.href : ','
 
         return {
           line:
-            `${titulo.text}
-            ,${metodo.toLowerCase()}
-            ,${cantidad}
-            ,${codigo}
-            ,${precio}
-            ,${parseFloat(precio.replace("$", "")) * parseInt(cantidad)}
-            ,${venta}
-            ,${comentario}
-            ,${cantidadDisponible}`,
-          comentarioValido,
+            titulo.text
+            + "," + metodo.toLowerCase()
+            + "," + cantidad
+            + "," + codigo
+            + "," + precio
+            + "," + `${parseFloat(precio.replace("$", "")) * parseInt(cantidad)}`
+            + "," + venta
+            + "," + comentario
+            + "," + `${(cantidadDisponible.split(prefijoCantidad) || [,])[1]}`,
+          comentarioValido
         };
       });
       const numeroComentariosInvalidos = dataToSave.filter(
         ({ comentarioValido }) => !comentarioValido
       ).length;
+
       const csvContent = dataToSave.map(({ line }) => line).join("\r\n");
 
       if (dataToSave.length > 0 || permiteDescargarCSVvacios) {
@@ -187,7 +192,9 @@
       let id;
 
       const frame = () => {
-        const moreCommentsbutton = document.querySelector(MORE_COMMENTS_SELECTOR);
+        const moreCommentsbutton = document?.querySelector(
+          MORE_COMMENTS_SELECTOR
+        );
         if (moreCommentsbutton === null) {
           clearInterval(id);
           descargarMensajes(onFinish);
@@ -204,6 +211,7 @@
   };
 
   const descargarTodos = () => {
+    
     const nextPhotoButton = document.querySelector(NEXT_PHOTO_SELECTOR);
     if (nextPhotoButton !== null) {
         nextPhotoButton?.click();
