@@ -6,8 +6,9 @@
   const COMMENT_WRAPPERS_SELECTOR = ".tw6a2znq.sj5x9vvc.d1544ag0.cxgpxx05";
   const COMMENT_CONTENT_SELECTOR = ".kvgmc6g5.cxmmr5t8";
   const permiteDescargarCSVvacios = false;
+  const prefijoCantidad = 'DP';
 
-  const docReady = (fn: any, intento = 1) => {
+  const docReady = (fn, intento = 1) => {
     setTimeout(() => {
       if (document.querySelector(PHOTO_HEADER_SELECTOR) !== null) {
         return fn();
@@ -44,14 +45,14 @@
     "Dos fedex", // No manejado
   ];
 
-  const esValido = (cantidad: any, metodo: any) => {
+  const esValido = (cantidad, metodo) => {
     const cantidadEsNumero = !isNaN(parseInt(cantidad));
     const metodoEsString =
       isNaN(parseInt(metodo)) && typeof metodo === "string";
     return cantidadEsNumero && metodoEsString;
   };
 
-  const generateCSV = (csvContent: any, codigo: any, numeroComentariosInvalidos: any) => {
+  const generateCSV = (csvContent, codigo, numeroComentariosInvalidos) => {
     const csvConfig = "data:text/csv;charset=utf-8,";
     const encodedUri = encodeURI(csvConfig + csvContent);
     const link = document.createElement("a");
@@ -68,7 +69,7 @@
     link.click();
   };
 
-  const procesarComment = (comment: any) => {
+  const procesarComment = (comment) => {
     // Removiendo espacios
     // Resuelve "    Fedex    1 ", "Fedex    1"
     const contentComment = comment.trim().replace(/\s+/g, " ");
@@ -117,49 +118,51 @@
   // codigo para validar casos
   //   console.log(casos.map(caso=>({...obtenerCantidadYMetodo(caso), caso})).filter(({comentarioValido})=>!comentarioValido));
 
-  const procesarFoto = (onFinish: Function) => {
-    const descargarMensajes = (onFinish: Function) => {
+  const procesarFoto = (onFinish) => {
+    const descargarMensajes = (onFinish) => {
       // se obtiene codigo y precio del producto
-      let [codigo, , precio, venta] = document
-        .querySelector(PHOTO_HEADER_SELECTOR)?.innerHTML.split("<br>") || [];
+      let [codigo, , precio, venta, cantidadDisponible] = document?.querySelector(PHOTO_HEADER_SELECTOR)?.innerHTML.split("<br>") || [];
 
+      if(cantidadDisponible.indexOf(prefijoCantidad)<0){
+        cantidadDisponible = `${prefijoCantidad}0`;
+      }
       // se obtienen comentarios del productos
       const commentWrappers = Array.from(
         document.querySelectorAll(COMMENT_WRAPPERS_SELECTOR)
       );
+      
 
       const dataToSave = Array.from(commentWrappers).map((element) => {
         const [titulo, comment] = Array.from(
           element.querySelectorAll(COMMENT_CONTENT_SELECTOR)
         );
 
-        const contentComment = comment.querySelector("div").innerHTML;
-        const { metodo, cantidad, comentarioValido } = procesarComment(
+        const contentComment = comment?.querySelector("div").innerHTML;
+        
+        const { metodo, cantidad, comentarioValido } = contentComment ? procesarComment(
           contentComment
-        );
+        ):{comentarioValido: false, metodo:'', cantidad: 0};
+
+        comentario = !comentarioValido ? contentComment+', Ir:' + document.location.href : ','
 
         return {
           line:
-            titulo.text +
-            "," +
-            metodo.toLowerCase() +
-            "," +
-            cantidad +
-            "," +
-            codigo +
-            "," +
-            precio +
-            "," +
-            parseFloat(precio.replace("$", "")) * parseInt(cantidad) +
-            "," +
-            venta +
-            (!comentarioValido ? ',' + contentComment+', Ir:' + document.location.href : ',,'),
-          comentarioValido,
+            titulo.text
+            + "," + metodo.toLowerCase()
+            + "," + cantidad
+            + "," + codigo
+            + "," + precio
+            + "," + `${parseFloat(precio.replace("$", "")) * parseInt(cantidad)}`
+            + "," + venta
+            + "," + comentario
+            + "," + `${(cantidadDisponible.split(prefijoCantidad) || [,])[1]}`,
+          comentarioValido
         };
       });
       const numeroComentariosInvalidos = dataToSave.filter(
         ({ comentarioValido }) => !comentarioValido
       ).length;
+
       const csvContent = dataToSave.map(({ line }) => line).join("\r\n");
 
       if (dataToSave.length > 0 || permiteDescargarCSVvacios) {
@@ -186,10 +189,12 @@
     };
 
     const esperarHastaDesaparecerCommentarios = () => {
-      let id: any;
+      let id;
 
       const frame = () => {
-        const moreCommentsbutton: HTMLElement|null = document.querySelector(MORE_COMMENTS_SELECTOR);
+        const moreCommentsbutton = document?.querySelector(
+          MORE_COMMENTS_SELECTOR
+        );
         if (moreCommentsbutton === null) {
           clearInterval(id);
           descargarMensajes(onFinish);
@@ -206,7 +211,8 @@
   };
 
   const descargarTodos = () => {
-    const nextPhotoButton: HTMLElement|null = document.querySelector(NEXT_PHOTO_SELECTOR);
+    
+    const nextPhotoButton = document.querySelector(NEXT_PHOTO_SELECTOR);
     if (nextPhotoButton !== null) {
         nextPhotoButton?.click();
         docReady(() => {
