@@ -185,11 +185,19 @@ function pipeCurrencyUnits(number) {
 */
 async function notifyOrderToCustomer (psid,order,userName) {
     let messageListProducts = '';
+    let totalItems = 0;
+    if(order.lines.length > 1) {
+        order.lines = order.lines.sort(function(a,b){
+            return a.productVariant.sku.localeCompare(b.productVariant.sku);
+        });
+    }
     order.lines.map((item) => {
+        totalItems += item.quantity;
         let totalItem = parseFloat(parseFloat(pipeCurrencyUnits(item.unitPriceWithTax)) * parseInt(item.quantity)).toFixed(2);
         messageListProducts += `✅${item.productVariant.sku}-${item.quantity} $${totalItem}
 `;   
     });
+    messageListProducts += `Total de materiales: ${totalItems}\n`;
     messageListProducts += `\n🗒️Tu número de pedido: ${order.code}`;
     messageListProducts += `\n💳Total a pagar: $: ${pipeCurrencyUnits(order.totalWithTax)}`;
     
