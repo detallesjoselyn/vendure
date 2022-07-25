@@ -210,20 +210,40 @@
     esperarHastaDesaparecerCommentarios();
   };
 
-  const descargarTodos = () => {
-    
+  const cerrarComentarios = async (onFinish) => {
+    const [menuPhotoElement] = document.querySelectorAll('div[aria-label="Acciones para esta publicación"]');
+    menuPhotoElement.click();
+    await setTimeout(() => {
+      const menuOptions = document.querySelectorAll('div.oajrlxb2  div.bp9cbjyn  span.d2edcug0');
+    const desactivarOption = [...menuOptions].find(option => option.textContent.includes("Desactivar comentarios"));
+      if(desactivarOption){
+        desactivarOption.click();
+      }else{
+        alert('No se encontro la opción, posiblemente ya estan desactivados los comentarios')
+      }
+      onFinish();
+    },2000)
+  }
+
+  const descargarTodos = (fnToExecute) => () => {
     const nextPhotoButton = document.querySelector(NEXT_PHOTO_SELECTOR);
     if (nextPhotoButton !== null) {
-        nextPhotoButton?.click();
-        docReady(() => {
-          procesarFoto(descargarTodos);
-        });
+      nextPhotoButton?.click();
+
+      docReady(() => {
+        fnToExecute(descargarTodos);
+      });
+    } else {
+      console.log("No hay más fotos");
+      alert("No hay más fotos");
     }
   };
 
   docReady(() => {
-    if (confirm("Empezar?")) {
-      procesarFoto(descargarTodos);
+    if (confirm("Deseas cerrar comentarios?")) {
+      cerrarComentarios(descargarTodos(cerrarComentarios));
+    }else if(confirm("Deseas descargar comentarios?")){
+      procesarFoto(descargarTodos(procesarFoto));
     }
   });
 })();
