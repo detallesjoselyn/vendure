@@ -210,40 +210,105 @@
     esperarHastaDesaparecerCommentarios();
   };
 
-  const cerrarComentarios = async (onFinish) => {
-    const [menuPhotoElement] = document.querySelectorAll('div[aria-label="Acciones para esta publicación"]');
-    menuPhotoElement.click();
-    await setTimeout(() => {
-      const menuOptions = document.querySelectorAll('div.oajrlxb2  div.bp9cbjyn  span.d2edcug0');
-    const desactivarOption = [...menuOptions].find(option => option.textContent.includes("Desactivar comentarios"));
-      if(desactivarOption){
-        desactivarOption.click();
-      }else{
-        alert('No se encontro la opción, posiblemente ya estan desactivados los comentarios')
-      }
-      onFinish();
-    },2000)
-  }
-
-  const descargarTodos = (fnToExecute) => () => {
+  const descargarTodos = () => {
+    
     const nextPhotoButton = document.querySelector(NEXT_PHOTO_SELECTOR);
     if (nextPhotoButton !== null) {
-      nextPhotoButton?.click();
-
-      docReady(() => {
-        fnToExecute(descargarTodos);
-      });
-    } else {
-      console.log("No hay más fotos");
-      alert("No hay más fotos");
+        nextPhotoButton?.click();
+        docReady(() => {
+          procesarFoto(descargarTodos);
+        });
     }
+  };
+  
+  const cerrarTodos = () => {
+    console.log('Next Page');
+    const nextPhotoButton = document.querySelector(NEXT_PHOTO_SELECTOR);
+    if (nextPhotoButton !== null) {
+        nextPhotoButton?.click();
+        docReady(() => {
+          cerrarComentariosFn(cerrarTodos);
+        });
+    }
+  };
+
+  const cerrarComentariosFn = (onFinish) => {
+
+  const esperarHastaQueHabraElMenu =  (onReady) => {
+      const PHOTO_ACTION_SELECTOR = 'div[aria-label="Acciones para esta publicación"]';
+      const menuPhotoElement = document.querySelector(PHOTO_ACTION_SELECTOR);
+      let id;
+      let intentos = 0;
+      menuPhotoElement.click();
+      const frame = () => {
+        const menuOptions = document.querySelectorAll(
+          "div.oajrlxb2  div.bp9cbjyn  span.d2edcug0"
+        );
+       const desactivarOption = [...menuOptions].find((option) =>
+          option.textContent.includes("Desactivar comentarios")
+        );
+        if (desactivarOption) {
+          console.log("Cerrando comentarios...");
+          desactivarOption.click();
+          clearInterval(id);
+          onReady();
+          return;
+        }
+        else if(intentos ===3) {
+          console.log('No se encontro boton de cerrar')
+          clearInterval(id);
+          onReady();
+          return;
+         }
+         else{
+           intentos ++;
+           console.log("Cargando menu");
+         }
+        
+      };
+      id = setInterval(frame, 800);
+    };
+    const esperarHastaQueAparezcaElLabel = () => {
+      const CERRAR_COMMENTS_SELECTOR = "div.bp9cbjyn > span.d2edcug0.oqcyycmt";
+      const nextPhotoButton = document.querySelector(NEXT_PHOTO_SELECTOR);
+      let id;
+      let intentos = 0;
+
+      const frame = () => {
+        const cerrarCommentsLabel = document?.querySelector(
+          CERRAR_COMMENTS_SELECTOR
+        );
+        if (cerrarCommentsLabel !== null && nextPhotoButton!==null) {
+          clearInterval(id);
+          console.log('Abriendo siguiente foto');
+          onFinish();
+          return;
+        }else if (intentos ===3){
+          clearInterval(id);
+          alert('Terminado')
+          return;
+        } else {
+          intentos++;
+          console.log("Looking for label");
+        }
+      };
+      id = setInterval(frame, 800);
+    };
+    esperarHastaQueHabraElMenu(()=>{
+      esperarHastaQueAparezcaElLabel();
+    })
   };
 
   docReady(() => {
     if (confirm("Deseas cerrar comentarios?")) {
-      cerrarComentarios(descargarTodos(cerrarComentarios));
+    // Pagina cargada
+    // Click en Menu
+    // Espera a que menu este listo
+    // Click en cerrar comentarios
+    // Espera a que este listo el cartel de cerrado
+      cerrarComentariosFn(cerrarTodos);
     }else if(confirm("Deseas descargar comentarios?")){
-      procesarFoto(descargarTodos(procesarFoto));
+      procesarFoto(descargarTodos);
     }
   });
 })();
