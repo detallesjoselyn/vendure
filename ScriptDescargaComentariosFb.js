@@ -117,14 +117,15 @@
   };
   // codigo para validar casos
   //   console.log(casos.map(caso=>({...obtenerCantidadYMetodo(caso), caso})).filter(({comentarioValido})=>!comentarioValido));
-
+  const CANTIDAD_DEFAULT = 0;
   const procesarFoto = (onFinish) => {
     const descargarMensajes = (onFinish) => {
       // se obtiene codigo y precio del producto
-      let [codigo, , precio, venta, cantidadDisponible] = document?.querySelector(PHOTO_HEADER_SELECTOR)?.innerHTML.split("<br>") || [];
+      let [codigo, , precio, venta, cantidadDisponibleRenglon] = document?.querySelector(PHOTO_HEADER_SELECTOR)?.innerHTML.split("<br>") || [];
 
-      if(cantidadDisponible.indexOf(prefijoCantidad)<0){
-        cantidadDisponible = `${prefijoCantidad}0`;
+      // Si no existe un valor valido se setea valor por default
+      if(cantidadDisponibleRenglon.indexOf(prefijoCantidad)<0){
+        cantidadDisponibleRenglon = `${prefijoCantidad}${CANTIDAD_DEFAULT}`;
       }
       // se obtienen comentarios del productos
       const commentWrappers = Array.from(
@@ -144,6 +145,8 @@
         ):{comentarioValido: false, metodo:'', cantidad: 0};
 
         comentario = !comentarioValido ? contentComment+', Ir:' + document.location.href : ','
+        let cantidadDisponible = (cantidadDisponibleRenglon.split(prefijoCantidad) || [,])[1];
+        cantidadDisponible = Number.isInteger(cantidadDisponible)?cantidadDisponible:CANTIDAD_DEFAULT;
 
         return {
           line:
@@ -155,7 +158,7 @@
             + "," + `${parseFloat(precio.replace("$", "")) * parseInt(cantidad)}`
             + "," + venta
             + "," + comentario
-            + "," + `${(cantidadDisponible.split(prefijoCantidad) || [,])[1]}`,
+            + "," + cantidadDisponible,
           comentarioValido
         };
       });
