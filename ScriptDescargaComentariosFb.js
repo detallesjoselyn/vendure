@@ -1,10 +1,20 @@
+
 (() => {
+  const findElementByContentText = (elements, text) => {
+    for (const div of elements) {
+      if (div.textContent.includes(text)) {
+        return div;
+      }
+    }
+    console.warn(`Error, no se encuentra el texto ${text}`);
+    return;
+  };
   const NEXT_PHOTO_SELECTOR = "[aria-label='Foto siguiente']";
 
   const getMoreCommentsElement = () =>
-    document?.querySelector(
-      '.k0kqjr44 .alzwoclg .qi72231t[role="button"] .alzwoclg .gvxzyvdx',
-    );
+  document?.querySelector(
+    '.x78zum5.x1iyjqo2.x21xpn4.x1n2onr6 .x1i10hfl[role="button"] .x193iq5w.xeuugli',
+  );
 
   const getHeaderElement = () =>
     document.querySelectorAll(
@@ -15,7 +25,10 @@
     document.querySelectorAll('.x1jx94hy ul')[0];
 
   const getContentElement = (element) => element.querySelector('.x1n2onr6 .x1n2onr6.x4uap5.x18d9i69.x1swvt13.x1iorvi4.x78zum5.x1q0g3np.x1a2a7pz');
-    
+
+  const getMenuElement =()=> document?.querySelector(
+    '.xb57i2i.x1q594ok.x5lxg6s.x6ikm8r.x1ja2u2z.x1pq812k.x1rohswg.xfk6m8.x1yqm8si.xjx87ck.xx8ngbg.xwo3gff.x1n2onr6.x1oyok0e.x1odjw0f.x1e4zzel.x1qjc9v5.x9f619.x78zum5.xdt5ytf.x4uap5.xkhd6sd.x1ten1a2.xz7cn9q.x168biu4 > div > div',
+    );
 
   const permiteDescargarCSVvacios = false;
   const prefijoCantidad = 'DP';
@@ -239,11 +252,10 @@
     };
 
     const esperarHastaQueHabraElMenu = (onReady) => {
-      const COMMENT_ACTION_SELECTOR =
-        '.k0kqjr44 .alzwoclg .qi72231t[role="button"] .gvxzyvdx';
-      const menuCommentsElement = document.querySelector(
-        COMMENT_ACTION_SELECTOR,
+      const posibleMenuElements = document.querySelectorAll(
+        '.x193iq5w.xeuugli.x13faqbe.x1vvkbs.xlh3980.xvmahel.x1n0sxbx.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x4zkp8e.x3x7a5m.x1f6kntn.xvq8zen.x1s688f.xi81zsa',
       );
+      const menuCommentsElement =findElementByContentText(posibleMenuElements,'Más recientes')
 
       let id;
       let intentos = 0;
@@ -256,15 +268,15 @@
       menuCommentsElement.click();
 
       const frame = () => {
+        const getAllMenuOptions =()=> document.querySelectorAll(
+          '.x4k7w5x.x1h91t0o.x1beo9mf.xaigb6o.x12ejxvf.x3igimt.xarpa2k.xedcshv [role="menuitem"]',
+        )
         const menuOptions = Array.from(
-          document.querySelectorAll(
-            '.alzwoclg.cqf1kptm.cgu29s5g.om3e55n1 [role="menuitem"]',
-          ),
+          getAllMenuOptions(),
         );
-        const buttonText = 'Todos los comentarios';
-        const todosLosComentariosOption = [...menuOptions].find((option) =>
-          option.textContent.includes(buttonText),
-        );
+
+        const todosLosComentariosOption =findElementByContentText(menuOptions,'Todos los comentarios')
+
         if (todosLosComentariosOption) {
           console.log('Mostrando todos los comentarios...');
           todosLosComentariosOption.click();
@@ -319,12 +331,11 @@
       let intentos = 0;
       menuPhotoElement.click();
       const frame = () => {
-        const menuOptions = document.querySelectorAll(
-          'div.oajrlxb2  div.bp9cbjyn  span.d2edcug0',
-        );
+        const menuOptions = getMenuElement()?.children || [];
         const desactivarOption = [...menuOptions].find((option) =>
           option.textContent.includes('Desactivar comentarios'),
         );
+
         if (desactivarOption) {
           console.log('Cerrando comentarios...');
           desactivarOption.click();
@@ -344,16 +355,16 @@
       id = setInterval(frame, 800);
     };
     const esperarHastaQueAparezcaElLabel = () => {
-      const CERRAR_COMMENTS_SELECTOR = 'div.bp9cbjyn > span.d2edcug0.oqcyycmt';
       const nextPhotoButton = document.querySelector(NEXT_PHOTO_SELECTOR);
       let id;
       let intentos = 0;
 
       const frame = () => {
-        const cerrarCommentsLabel = document?.querySelector(
-          CERRAR_COMMENTS_SELECTOR,
+        const cerrarCommentsElement = document?.querySelector(
+          '.x193iq5w.xeuugli.x13faqbe.x1vvkbs.xlh3980.xvmahel.x1n0sxbx.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x4zkp8e.x676frb.x1pg5gke.x1sibtaa.x1s688f.xi81zsa.x2b8uid',
         );
-        if (cerrarCommentsLabel !== null && nextPhotoButton !== null) {
+
+        if (cerrarCommentsElement !== null && nextPhotoButton !== null) {
           clearInterval(id);
           console.log('Abriendo siguiente foto');
           onFinish();
