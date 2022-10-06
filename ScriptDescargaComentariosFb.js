@@ -6,7 +6,7 @@
         return div;
       }
     }
-    console.warn(`Error, no se encuentra el texto ${text}`);
+    console.log(`No se encuentra el texto ${text}`);
     return;
   };
   const NEXT_PHOTO_SELECTOR = "[aria-label='Foto siguiente']";
@@ -210,8 +210,8 @@
 
       if (dataToSave.length > 0 || permiteDescargarCSVvacios) {
         generateCSV(csvContent, codigo, numeroComentariosInvalidos);
-        console.log(
-          'Codigo:',
+        console.info(
+          'DESCARGANDO COMENTARIOS Codigo:',
           codigo,
           ', descargados: ',
           dataToSave.length,
@@ -222,8 +222,8 @@
             : '',
         );
       } else {
-        console.log(
-          'Codigo:',
+        console.warn(
+          'NO EXISTEN COMENTARIOS EN ESTE Codigo:',
           codigo,
           ', 0 registros, URL:',
           document.location.href,
@@ -256,16 +256,23 @@
         '.x193iq5w.xeuugli.x13faqbe.x1vvkbs.xlh3980.xvmahel.x1n0sxbx.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x4zkp8e.x3x7a5m.x1f6kntn.xvq8zen.x1s688f.xi81zsa',
       );
       const menuCommentsElement =findElementByContentText(posibleMenuElements,'Más recientes')
+      const comentariosDestacados =findElementByContentText(posibleMenuElements,'Comentarios destacados')
 
       let id;
       let intentos = 0;
-      if (!menuCommentsElement) {
+      if (!menuCommentsElement && !comentariosDestacados) {
         console.log(`No tiene menu de comentarios`);
         clearInterval(id);
         onReady();
         return;
       }
-      menuCommentsElement.click();
+      if(comentariosDestacados){
+        comentariosDestacados.click();
+      } 
+      else{
+        menuCommentsElement.click();
+      }
+      
 
       const frame = () => {
         const getAllMenuOptions =()=> document.querySelectorAll(
@@ -274,7 +281,7 @@
         const menuOptions = Array.from(
           getAllMenuOptions(),
         );
-
+        const todosLosComentarios = 'Todos los comentarios';
         const todosLosComentariosOption =findElementByContentText(menuOptions,'Todos los comentarios')
 
         if (todosLosComentariosOption) {
@@ -284,7 +291,7 @@
           onReady();
           return;
         } else if (intentos === 3) {
-          console.log(`No se encontro boton de ${buttonText}`);
+          console.log(`No se encontro boton de ${todosLosComentarios}`);
           clearInterval(id);
           onReady();
           return;
