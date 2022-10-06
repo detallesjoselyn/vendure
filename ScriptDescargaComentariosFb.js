@@ -8,14 +8,14 @@
 
   const getHeaderElement = () =>
     document.querySelectorAll(
-      "[role='complementary'] .gvxzyvdx.aeinzg81.pbevjfx6",
-    )[1];
+      '.x1swvt13.xsag5q8.x1pi30zi.xyamay9 .xkhd6sd.x1g2khh7.x4uap5.xyinxu5 .x193iq5w.xeuugli.x13faqbe.x1vvkbs.xlh3980.xvmahel.x1n0sxbx.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x4zkp8e.x3x7a5m.x1f6kntn.xvq8zen.xo1l8bm.xzsf02u',
+    )[0];
 
   const getCommentWrapperElements = () =>
-    document.querySelectorAll('.k0kqjr44 ul')[0];
+    document.querySelectorAll('.x1jx94hy ul')[0];
 
-  const getContentElement = (element) =>
-    element.querySelector('.jg3vgc78 .e4ay1f3w.r5g9zsuq.aesu6q9g.q46jt4gp');
+  const getContentElement = (element) => element.querySelector('.x1n2onr6 .x1n2onr6.x4uap5.x18d9i69.x1swvt13.x1iorvi4.x78zum5.x1q0g3np.x1a2a7pz');
+    
 
   const permiteDescargarCSVvacios = false;
   const prefijoCantidad = 'DP';
@@ -146,13 +146,13 @@
       );
 
       const dataToSave = Array.from(commentWrappers).map((element) => {
-        const [titulo, comment] = Array.from(
-          getContentElement(element).children,
+        const commentElement = getContentElement(element)
+        const [, comment] = Array.from(
+          commentElement.children,
         );
-
-        const contentComment =
-          comment.querySelector('span > div >div ').textContent;
-
+        const contentComment = comment.querySelector('span  > div >div ').textContent;;
+        const titulo = comment.querySelectorAll('span')[0].textContent;
+        
         const { metodo, cantidad, comentarioValido } = contentComment
           ? procesarComment(contentComment)
           : { comentarioValido: false, metodo: '', cantidad: 0 };
@@ -169,7 +169,7 @@
 
         return {
           line:
-            titulo.textContent +
+            titulo +
             ',' +
             metodo.toLowerCase() +
             ',' +
