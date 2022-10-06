@@ -17,9 +17,9 @@
   );
 
   const getHeaderElement = () =>
-    document.querySelectorAll(
-      '.x1swvt13.xsag5q8.x1pi30zi.xyamay9 .xkhd6sd.x1g2khh7.x4uap5.xyinxu5 .x193iq5w.xeuugli.x13faqbe.x1vvkbs.xlh3980.xvmahel.x1n0sxbx.x1lliihq.x1s928wv.xhkezso.x1gmr53x.x1cpjm7i.x1fgarty.x1943h6x.x4zkp8e.x3x7a5m.x1f6kntn.xvq8zen.xo1l8bm.xzsf02u',
-    )[0];
+    document.querySelector(
+      '.x1swvt13 > div > .xkhd6sd > .x193iq5w[dir="auto"]',
+    );
 
   const getCommentWrapperElements = () =>
     document.querySelectorAll('.x1jx94hy ul')[0];
@@ -146,6 +146,7 @@
   const procesarFoto = (onFinish) => {
     const descargarMensajes = (onFinish) => {
       // se obtiene codigo y precio del producto
+
       let [codigo, , precio, venta, cantidadDisponibleRenglon] =
         getHeaderElement()?.innerHTML.split('<br>') || [];
 
@@ -173,6 +174,7 @@
         comentario = !comentarioValido
           ? contentComment + ', Ir:' + document.location.href
           : ',';
+
         let cantidadDisponible = (cantidadDisponibleRenglon.split(
           prefijoCantidad,
         ) || [,])[1];
