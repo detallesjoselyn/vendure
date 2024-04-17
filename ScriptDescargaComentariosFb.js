@@ -1,5 +1,8 @@
 
 (() => {
+
+  const getSelectorsByClasses=(classHTML)=>'.'+classHTML.replaceAll(' ','.');
+
   const findElementByContentText = (elements, text) => {
     for (const div of elements) {
       if (div.textContent.includes(text)) {
@@ -21,10 +24,12 @@
       '.x1swvt13 > div > .xkhd6sd > .x193iq5w[dir="auto"]',
     );
 
+  // const getCommentWrapperElements = () =>
+  //   document.querySelectorAll('.x1n2onr6')[0];
   const getCommentWrapperElements = () =>
-    document.querySelectorAll('.x1jx94hy ul')[0];
+    document.querySelectorAll(`.x169t7cy.x19f6ikt:not(.x1wsgfga)`);
 
-  const getContentElement = (element) => element.querySelector('.x1n2onr6 .x1n2onr6.x4uap5.x18d9i69.x1swvt13.x1iorvi4.x78zum5.x1q0g3np.x1a2a7pz');
+  const getContentElement = (element) => element.querySelector(getSelectorsByClasses('x1y1aw1k xn6708d xwib8y2 x1ye3gou'));
 
   const getMenuElement =()=> document?.querySelector(
     '.xb57i2i.x1q594ok.x5lxg6s.x6ikm8r.x1ja2u2z.x1pq812k.x1rohswg.xfk6m8.x1yqm8si.xjx87ck.xx8ngbg.xwo3gff.x1n2onr6.x1oyok0e.x1odjw0f.x1e4zzel.x1qjc9v5.x9f619.x78zum5.xdt5ytf.x4uap5.xkhd6sd.x1ten1a2.xz7cn9q.x168biu4 > div > div',
@@ -156,17 +161,17 @@
       }
       // se obtienen comentarios del productos
       const commentWrappers = Array.from(
-        getCommentWrapperElements()?.children || [],
+        getCommentWrapperElements() || [],
       );
 
       const dataToSave = Array.from(commentWrappers).map((element) => {
         const commentElement = getContentElement(element)
-        const [, comment] = Array.from(
+        const [nombreTitulo, comment] = Array.from(
           commentElement.children,
         );
         const contentComment = comment.querySelector('span  > div >div ').textContent;;
-        const titulo = comment.querySelectorAll('span')[0].textContent;
-        
+        const titulo = nombreTitulo.textContent;
+
         const { metodo, cantidad, comentarioValido } = contentComment
           ? procesarComment(contentComment)
           : { comentarioValido: false, metodo: '', cantidad: 0 };
