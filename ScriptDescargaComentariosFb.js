@@ -153,7 +153,7 @@
       // se obtiene codigo y precio del producto
 
       let [codigo, , precio, venta, cantidadDisponibleRenglon] =
-        getHeaderElement()?.innerHTML.split('<br>') || [];
+        getHeaderElement()?.innerHTML.split('<br class=\"html-br\">') || [];
 
       // Si no existe un valor valido se setea valor por default
       if (cantidadDisponibleRenglon.indexOf(prefijoCantidad) < 0) {
@@ -345,7 +345,7 @@
       let intentos = 0;
       menuPhotoElement.click();
       const frame = () => {
-        const menuOptions = getMenuElement()?.children || [];
+        const menuOptions = getMenuElement()?.children || [];
         const desactivarOption = [...menuOptions].find((option) =>
           option.textContent.includes('Desactivar comentarios'),
         );
